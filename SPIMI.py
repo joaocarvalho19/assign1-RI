@@ -1,12 +1,31 @@
 import csv
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
 from sys import argv
 
-def tokenization(data):
+def tokenizer(data, min_len, stopwords, ps):
     for _id, l in data.items():
-        headline_list = l[0].split(" ")
-        body_list = l[1].split(" ")
+        headline_list = list(set(l[0].split()))
+        body_list = list(set(l[1].split()))
+
+        # Minimum length filter
+        if min_len:
+            headline_list = [ x for x in headline_list if len(x) > min_len ]
+            body_list = [ x for x in body_list if len(x) > min_len ]
+
+        # Stopwords
+        if stopwords:
+            headline_list = list(set(headline_list) - set(stopwords))
+            body_list = list(set(body_list) - set(stopwords))
+
+        # Porter stemmer
+        headline_list = [ps.stem(w) for w in headline_list]
+        body_list = [ps.stem(w) for w in body_list]
+        
         print(headline_list)
         print(body_list)
+
+        # Only first row
         break
 
 def parser(dataset):
@@ -22,5 +41,8 @@ def parser(dataset):
 if __name__ == "__main__":
     stopwords = ['the', 'a', 'to', 'of']
     dataset = argv[1]
+    min_len = 1
+    ps = PorterStemmer()
+
     data = parser(dataset)
-    tokenization(data)
+    tokenizer(data, min_len, stopwords, ps)
