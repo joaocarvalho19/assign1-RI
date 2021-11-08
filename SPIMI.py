@@ -1,48 +1,37 @@
-import csv
-from nltk.stem import PorterStemmer
-from nltk.tokenize import word_tokenize
+import argparse
+from parser import Parser
+from tokenizer import Tokenizer
 from sys import argv
 
-def tokenizer(data, min_len, stopwords, ps):
-    for _id, l in data.items():
-        headline_list = list(set(l[0].split()))
-        body_list = list(set(l[1].split()))
-
-        # Minimum length filter
-        if min_len:
-            headline_list = [ x for x in headline_list if len(x) > min_len ]
-            body_list = [ x for x in body_list if len(x) > min_len ]
-
-        # Stopwords
-        if stopwords:
-            headline_list = list(set(headline_list) - set(stopwords))
-            body_list = list(set(body_list) - set(stopwords))
-
-        # Porter stemmer
-        headline_list = [ps.stem(w) for w in headline_list]
-        body_list = [ps.stem(w) for w in body_list]
-        
-        print(headline_list)
-        print(body_list)
-
-        # Only first row
-        break
-
-def parser(dataset):
-    data_dict = {}          #key = "review_id"; value = list with "review_headline" and "review_body"
-    with open(dataset) as fd:
-        rd = csv.reader(fd, delimiter="\t", quoting=csv.QUOTE_NONE)
-        for row in rd:
-            if row[2] != 'review_id':
-                review_id, review_headline, review_body = row[2], row[12], row[13]
-                data_dict[review_id] = [review_headline, review_body]
-    return data_dict
+def main(min_length, stopwords, dataset):
+    # Main function used to call the parser and tokenizer in a cleaner way
+    parser = Parser(dataset)
+    data = parser.parse()
+    
+    tokenizer = Tokenizer(data,min_length,stopwords)
+    tokens = tokenizer.get_tokens()
+    #print(tokens)
+    return
 
 if __name__ == "__main__":
-    stopwords = ['the', 'a', 'to', 'of']
-    dataset = argv[1]
-    min_len = 1
-    ps = PorterStemmer()
-
-    data = parser(dataset)
-    tokenizer(data, min_len, stopwords, ps)
+    # Command line arguments
+    cli_parser = argparse.ArgumentParser()
+    cli_parser.add_argument("dataset", help="Dataset")
+    cli_parser.add_argument("-m", "--minimum", type=int, default=2, help="Minimum token length. Default 2 characets. Enter 0 to deactivate.")
+    cli_parser.add_argument("-s", "--stopwords", default=['the', 'a', 'to', 'of'], help="Stopword list. Enter 'D' to deactivate")
+    args = cli_parser.parse_args()
+    
+    data = args.dataset
+    if args.minimum == 0:
+        min_len = None
+    else:
+        min_len = args.minimum
+    
+    # TODO: check what we want as an argument and fix the this snippet
+    if args.stopwords == ['D']:
+        stopwords = None
+    else:
+        stopwords = args.stopwords
+    
+        
+    main(min_len,stopwords,data)
