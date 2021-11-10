@@ -14,7 +14,8 @@ def main(min_length, stopwords, dataset):
     
     tokenizer = Tokenizer(data,min_length,stopwords)
     tokens = tokenizer.get_tokens()
-    #print(tokens)
+    print(tokens)
+
     return
 
 if __name__ == "__main__":

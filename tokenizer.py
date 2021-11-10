@@ -22,26 +22,26 @@ class Tokenizer:
     '''
     def get_tokens(self):
         for _id, l in self.dataset.items():
-            headline_list = list(set(l[0].split()))
-            body_list = list(set(l[1].split()))
+            content_list = list(set(l.split()))
+            #body_list = list(set(l[1].split()))
 
             # Minimum length filter
             if self.min_len != None:
-                headline_list = [x for x in headline_list if len(x) > self.min_len]
-                body_list = [x for x in body_list if len(x) > self.min_len]
+                content_list = [x for x in content_list if len(x) > self.min_len]
+                #body_list = [x for x in body_list if len(x) > self.min_len]
 
             # Stopwords
             if self.stopwords != None:
-                headline_list = list(set(headline_list) - set(self.stopwords))
-                body_list = list(set(body_list) - set(self.stopwords))
+                content_list = list(set(content_list) - set(self.stopwords))
+                #body_list = list(set(body_list) - set(self.stopwords))
 
             # Porter stemmer
-            headline_list = [self.porter_stemmer.stem(w) for w in headline_list]
-            body_list = [self.porter_stemmer.stem(w) for w in body_list]
+            content_list = [self.porter_stemmer.stem(w) for w in content_list]
+            #body_list = [self.porter_stemmer.stem(w) for w in body_list]
 
-            print(headline_list)
-            print(body_list)
+            #print(content_list)
+            #print(body_list)
 
             # Only first row
             break
-        return
+        return content_list
