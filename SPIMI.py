@@ -3,6 +3,16 @@ from parser import Parser
 from tokenizer import Tokenizer
 from sys import argv
 
+def spimi_invert(tokens):
+    output_file = open("output", "w")
+    dictionary = {}
+
+    while True:
+        token = tokens[0]
+        if token not in dictionary:
+            pass
+
+
 def main(min_length, stopwords, dataset):
     # Main function used to call the parser and tokenizer in a cleaner way
     parser = Parser(dataset)
@@ -10,7 +20,8 @@ def main(min_length, stopwords, dataset):
     
     tokenizer = Tokenizer(data,min_length,stopwords)
     tokens = tokenizer.get_tokens()
-    #print(tokens)
+    print(tokens)
+
     return
 
 if __name__ == "__main__":
