@@ -1,3 +1,4 @@
+import re
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
@@ -22,12 +23,20 @@ class Tokenizer:
     '''
     def get_tokens(self):
         for _id, l in self.dataset.items():
+            # Remove leftover HTML tags, make all words lower case and remove ,.-
+            l = re.sub('<[^<]+?>', '', l)
+            l = l.lower()
+            l = re.sub("[,.-]+", ' ', l)
+            # Create a clean list containing the words
             content_list = list(set(l.split()))
+            #content_list = [x.lower() for x in content_list]
+            #content_list = [re.sub("[,.-]+", ' ', x) for x in content_list]
+            #print(content_list)
             #body_list = list(set(l[1].split()))
 
             # Minimum length filter
             if self.min_len != None:
-                content_list = [x for x in content_list if len(x) > self.min_len]
+                content_list = [x for x in content_list if (len(x) >= self.min_len)]
                 #body_list = [x for x in body_list if len(x) > self.min_len]
 
             # Stopwords
@@ -36,7 +45,7 @@ class Tokenizer:
                 #body_list = list(set(body_list) - set(self.stopwords))
 
             # Porter stemmer
-            content_list = [self.porter_stemmer.stem(w) for w in content_list]
+            #content_list = [self.porter_stemmer.stem(w) for w in content_list]
             #body_list = [self.porter_stemmer.stem(w) for w in body_list]
 
             #print(content_list)

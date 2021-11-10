@@ -22,7 +22,7 @@ if __name__ == "__main__":
     # Command line arguments
     cli_parser = argparse.ArgumentParser()
     cli_parser.add_argument("dataset", help="Dataset")
-    cli_parser.add_argument("-m", "--minimum", type=int, default=2, help="Minimum token length. Default 2 characets. Enter 0 to deactivate.")
+    cli_parser.add_argument("-m", "--minimum", type=int, default=3, help="Minimum token length. Default 2 characets. Enter 0 to deactivate.")
     cli_parser.add_argument("-s", "--stopwords", default=default_stopwords, help="Stopword list. Enter 'D' to deactivate")
     args = cli_parser.parse_args()
     
@@ -37,5 +37,5 @@ if __name__ == "__main__":
         stopwords = None
     else:
         stopwords = args.stopwords
-    
+
     main(min_len,stopwords,data)
