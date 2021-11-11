@@ -36,6 +36,8 @@ class SPIMI:
                         #count=0
                         self.indexer.run(tokens)
                         self.indexer.write_block()
+                        # clear memory
+                        tokens = []
                         break
 
         return

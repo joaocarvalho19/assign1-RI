@@ -1,3 +1,4 @@
+import re
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 
@@ -22,6 +23,10 @@ class Tokenizer:
 
     def get_tokens(self, data, _id):
         #for _id, l in self.dataset.items():
+        data = re.sub('<[^<]+?>', '', data)
+        data = data.lower()
+        data = re.sub('\W',' ',data)
+        #data = re.sub("[,.!-\'\?]+", ' ', data)
         content_list = list(set(data.split()))
         #body_list = list(set(l[1].split()))
 
@@ -39,4 +44,5 @@ class Tokenizer:
         tokens = [(self.porter_stemmer.stem(w), _id) for w in content_list]
         #body_list = [self.porter_stemmer.stem(w) for w in body_list]
 
+        print(tokens)
         return tokens
