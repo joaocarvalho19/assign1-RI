@@ -19,6 +19,6 @@ class Parser:
             for row in rd:
                 if row[2] != 'review_id':
                     review_id, review_headline, review_body = row[2], row[12], row[13]
-                    data_dict[review_id] = review_headline + " " + review_body
+                    data_dict[review_id] = str(review_headline) + " " + str(review_body)
 
         return data_dict

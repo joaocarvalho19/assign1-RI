@@ -1,3 +1,4 @@
+import re
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 import re
@@ -20,7 +21,6 @@ class Tokenizer:
     RETURNS:
         list containing the tokens
     '''
-
     def get_tokens(self, data, _id):
         # Remove non-ASCII characters
         data = re.sub('\W+',' ',data)
@@ -28,6 +28,7 @@ class Tokenizer:
         # Create a clean list containing the words
         content_list = list(set(data.split()))
         #body_list = list(set(l[1].split()))
+
 
         # Minimum length filter
         if self.min_len != None:

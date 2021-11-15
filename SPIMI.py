@@ -10,6 +10,7 @@ import time
 import os
 #import psutil
 
+
 class SPIMI:
     def __init__(self, dataset, min_length, stopwords):
         self.dataset = dataset
@@ -94,3 +95,4 @@ if __name__ == "__main__":
     
     spimi = SPIMI(data, min_len,stopwords)
     spimi.run()
+
