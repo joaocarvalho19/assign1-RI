@@ -12,7 +12,7 @@ class Indexer:
                 self.indexed_tokens[token] = [_id]
             else:
                 if _id not in self.indexed_tokens[token]:
-                    self.indexed_tokens[token] += [_id]
+                    self.indexed_tokens[token].append(_id)
     
     def getIndexedTokens(self):
         return self.indexed_tokens
@@ -24,9 +24,9 @@ class Indexer:
         return self.num_temp_segments
 
     def write_block(self, post_list):
-        self.num_temp_segments+=1
+        self.num_temp_segments += 1
         sorted_index = dict(sorted(post_list.items()))
-        with open("output.txt",'w') as f:
+        with open("output.txt",'w+') as f:
             for token, value in sorted_index.items():
                 string = token + ' : ' + str(value) + '\n'
                 f.write(string)
@@ -34,16 +34,17 @@ class Indexer:
         self.vocabulary_size = len(post_list)
         self.indexed_tokens = {}
     
+    # TODO: fix a bug where terms are lost
     def merge_blocks(self):
         actual_list = {}
 
         # Check if output file exists
-        if not os.path.isfile('./output.txt'):
+        if not os.path.isfile('/output.txt'):
             return self.indexed_tokens
 
         # Check if output file is not empty
         if not os.stat("output.txt").st_size == 0:
-            with open("output.txt",'r') as f:
+            with open("output.txt",'r+') as f:
                 for line in f.readlines():
                     line = line.replace("\n","")
                     l = line.split(" : ")

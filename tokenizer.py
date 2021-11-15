@@ -22,13 +22,10 @@ class Tokenizer:
     '''
 
     def get_tokens(self, data, _id):
-        #for _id, l in self.dataset.items():
-        # Remove leftover HTML tags, make all words lower case and remove ,.-
-        data = re.sub('<[^<]+?>', '', data)
-        data = re.sub('\W',' ',data)
-        #data = re.sub("[,.!-\'\?]+", ' ', data)
+        # Remove non-ASCII characters
+        data = re.sub('\W+',' ',data)
+        
         # Create a clean list containing the words
-
         content_list = list(set(data.split()))
         #body_list = list(set(l[1].split()))
 
@@ -43,7 +40,7 @@ class Tokenizer:
             #body_list = list(set(body_list) - set(self.stopwords))
 
         # Porter stemmer
-        tokens = [(self.porter_stemmer.stem(w), _id) for w in content_list if w.isascii()]
+        tokens = [(self.porter_stemmer.stem(w), _id) for w in content_list if w.isalpha()]
         #body_list = [self.porter_stemmer.stem(w) for w in body_list]
 
         return tokens
