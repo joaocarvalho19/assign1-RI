@@ -1,3 +1,4 @@
+import re
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 import re
@@ -22,28 +23,17 @@ class Tokenizer:
     '''
 
     def get_tokens(self, data, _id):
-        #for _id, l in self.dataset.items():
-        # Remove leftover HTML tags, make all words lower case and remove ,.-
-        data = re.sub('<[^<]+?>', '', data)
-        data = re.sub('\W',' ',data)
-        #data = re.sub("[,.!-\'\?]+", ' ', data)
-        # Create a clean list containing the words
 
-        content_list = list(set(data.split()))
+        content_list = re.sub("[^0-9a-zA-Z]+"," ",data).lower().split(" ")
         #body_list = list(set(l[1].split()))
 
-        # Minimum length filter
+        # Minimum length filter, stopwords and Porter stemmer
         if self.min_len != None:
-            content_list = [x for x in content_list if (len(x) >= self.min_len)]
-            #body_list = [x for x in body_list if len(x) > self.min_len]
-
-        # Stopwords
-        if self.stopwords != None:
-            content_list = list(set(content_list) - set(self.stopwords))
-            #body_list = list(set(body_list) - set(self.stopwords))
+            tokens = [(self.porter_stemmer.stem(w), _id) for w in content_list if (len(w) >= self.min_len) and (w not in self.stopwords)]
+            #body_list = [w for w in body_list if len(w) > self.min_len]
 
         # Porter stemmer
-        tokens = [(self.porter_stemmer.stem(w), _id) for w in content_list if w.isascii()]
+        #tokens = [(self.porter_stemmer.stem(w), _id) for t in content_list]
         #body_list = [self.porter_stemmer.stem(w) for w in body_list]
 
         return tokens

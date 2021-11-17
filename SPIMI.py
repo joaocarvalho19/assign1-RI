@@ -1,5 +1,4 @@
 import argparse
-from parser import Parser
 from tokenizer import Tokenizer
 from indexer import Indexer
 from sys import argv
@@ -11,57 +10,57 @@ import os
 #import psutil
 
 class SPIMI:
-    def __init__(self, dataset, min_length, stopwords):
+    def __init__(self, dataset, min_length, stopwords, limit=10000):
         self.dataset = dataset
         self.tokenizer = Tokenizer(min_length,stopwords)
         self.indexer = Indexer()
+        self.chunk_limit = limit
+        self.block_num = 1
 
 
     def run(self):
         # Main function
 
-        limit = 100000
         count = 0
         begin = time.time()
         with open(self.dataset) as fd:
                 rd = csv.reader(fd, delimiter="\t", quoting=csv.QUOTE_NONE)
                 tokens = []
+                print("Indexing...")
                 for row in rd:
-                    #memory = psutil.virtual_memory().available
-                    #print(memory)
                         
                         # Block
-                        if count < limit:   
+                        if count < self.chunk_limit:   
                             if row[2] != 'review_id':
-                                review_id, review_headline, review_body = row[2], row[12], row[13]
-                                string = review_headline + " " + review_body
+                                review_id, product_title, review_headline, review_body = row[2], row[5], row[12], row[13]
+                                string = product_title + " " + review_headline + " " + review_body
                                 tokens += self.tokenizer.get_tokens(string, review_id)
                             
                             count+=1
-                            print(count)
                         else:
                             # reaching limit - write block on disk
-                            
                             self.indexer.run(tokens)
                             # clear memory
                             tokens = []
 
-                            post_list = self.indexer.merge_blocks()
-                            self.indexer.write_block(post_list)
+                            self.indexer.write_block(self.block_num)
+                            self.block_num += 1
                             count=0
                             #break
 
                 self.indexer.run(tokens)
                 tokens = []
-                post_list = self.indexer.merge_blocks()
-                self.indexer.write_block(post_list)
-                
+                self.indexer.write_block(self.block_num)
+
+                # Merge blocks
+                self.indexer.merge_blocks()
+
                 end = time.time()
 
-                print("Total indexing time (s): ", round(end-begin, 2))
-                print("Total index size on disk (s): ", os.path.getsize('./output.txt'))
+                print("Total indexing time (min): ", round((end-begin)/60, 2))
+                print("Total index size on disk: ", self.indexer.getIndexSize())
                 print("Vocabulary size: ", self.indexer.getVocabularySize())
-                print("Number of temporary index segments written to disk: ", self.indexer.getNumTS())
+                print("Number of temporary index segments written to disk: ", self.block_num)
 
         print("Finish!!")
         fd.close()
@@ -87,5 +86,5 @@ if __name__ == "__main__":
     else:
         stopwords = args.stopwords
     
-    spimi = SPIMI(data, min_len,stopwords)
+    spimi = SPIMI(data, min_len,stopwords, 10000)
     spimi.run()
