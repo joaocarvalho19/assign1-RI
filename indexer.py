@@ -7,12 +7,21 @@ class Indexer:
         self.num_temp_segments = 0
 
     def run(self, tokens):
+        # Writes to a internal dictionary the tokens. They are saved in the format:
+        # {'token': [(ID1, Count_on_ID1),(ID2, Count_on_ID2)]}
         for token, _id in tokens:
             if token not in self.indexed_tokens.keys():
-                self.indexed_tokens[token] = [_id]
+                self.indexed_tokens[token] = [(_id,tokens.count((token,_id)))]
             else:
                 if _id not in self.indexed_tokens[token]:
-                    self.indexed_tokens[token].append(_id)
+                    self.indexed_tokens[token].append((_id,tokens.count((token,_id))))
+                else:
+                    self.indexed_tokens[token].append((_id,tokens.count((token,_id))))
+                    list(set(self.indexed_tokens[token]))
+
+        
+    def clearIndex(self):
+        self.indexed_tokens = {}
     
     def getIndexedTokens(self):
         return self.indexed_tokens

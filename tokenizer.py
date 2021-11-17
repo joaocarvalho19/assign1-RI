@@ -21,26 +21,27 @@ class Tokenizer:
         list containing the tokens
     '''
 
-    def get_tokens(self, data, _id):
+    def get_tokens(self, _data, _id):
         # Remove non-ASCII characters
-        data = re.sub('\W+',' ',data)
+        data = re.sub('\W+',' ',_data)
         
         # Create a clean list containing the words
-        content_list = list(set(data.split()))
+        data = list(data.split())
         #body_list = list(set(l[1].split()))
 
         # Minimum length filter
-        if self.min_len != None:
-            content_list = [x for x in content_list if (len(x) >= self.min_len)]
+        if self.min_len != 0:
+            data = [x for x in data if (len(x) >= self.min_len)]
             #body_list = [x for x in body_list if len(x) > self.min_len]
 
         # Stopwords
-        if self.stopwords != None:
-            content_list = list(set(content_list) - set(self.stopwords))
+        if self.stopwords != 'D':
+            data = [x for x in data if x not in self.stopwords]
             #body_list = list(set(body_list) - set(self.stopwords))
 
         # Porter stemmer
-        tokens = [(self.porter_stemmer.stem(w), _id) for w in content_list if w.isalpha()]
+        tokens = [(self.porter_stemmer.stem(w), _id) for w in data if w.isalpha()]
+        #print(tokens)
         #body_list = [self.porter_stemmer.stem(w) for w in body_list]
 
         return tokens
