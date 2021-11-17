@@ -21,7 +21,7 @@ class SPIMI:
     def run(self):
         # Main function
 
-        limit = 50000
+        limit = 10000
         count = 0
         begin = time.time()
         with open(self.dataset, 'r') as fd:
@@ -61,9 +61,9 @@ class SPIMI:
         if tokens != []:
             self.indexer.run(tokens)
             tokens = []
-        post_list = self.indexer.merge_blocks()
-        self.indexer.write_block(post_list)
-        print('finished final: ', round((time.time()-begin)/60, 2))
+            post_list = self.indexer.merge_blocks()
+            self.indexer.write_block(post_list)
+            print('finished final: ', round((time.time()-begin)/60, 2))
             
         end = time.time()
 
