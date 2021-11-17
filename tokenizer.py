@@ -1,3 +1,4 @@
+import re
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
 import re
@@ -28,6 +29,7 @@ class Tokenizer:
         # Create a clean list containing the words
         data = list(data.split())
         #body_list = list(set(l[1].split()))
+
 
         # Minimum length filter
         if self.min_len != 0:
