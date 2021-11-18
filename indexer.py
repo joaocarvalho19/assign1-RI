@@ -15,10 +15,13 @@ class Indexer:
     def run(self, tokens):
         for token, _id in tokens:
             if token not in self.indexed_tokens.keys():
-                self.indexed_tokens[token] = [_id]
+                self.indexed_tokens[token] = set((_id, tokens.count((token, _id))))
             else:
                 if _id not in self.indexed_tokens[token]:
-                    self.indexed_tokens[token] += [_id]
+                    self.indexed_tokens[token].add((_id, tokens.count((token, _id))))
+    
+    def clearIndex(self):
+        self.indexed_tokens = {}
     
     def getIndexedTokens(self):
         return self.indexed_tokens
@@ -54,8 +57,9 @@ class Indexer:
                 postings = line[1]
                 postings_list = [str(s) for s in postings.replace('[', '').replace(']', '').replace("'", '').split(',')]
 
-                used_mem = initial_mem - psutil.virtual_memory().available
-                if used_mem > 3000000:
+                used_mem = initial_mem - psutil.virtual_memory().available                
+                # changed to use 300mb insted of just 3mb
+                if used_mem > 3000000000:
                     print("Writing part of index...")
                     self.write_index(temp_index)
                     temp_index = {}
@@ -83,7 +87,7 @@ class Indexer:
 
     def write_index(self, temp_index):
         ordered_dict = dict(sorted(temp_index.items()))
-        with open("index_"+str(self.index_num)+".txt",'w') as f:
+        with open("index_"+str(self.index_num)+".txt",'w+') as f:
             for term, value in ordered_dict.items():
                 string = term + ' : ' + str(value) + '\n'
                 f.write(string)
