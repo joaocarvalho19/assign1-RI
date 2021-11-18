@@ -15,12 +15,15 @@ class Indexer:
     def run(self, tokens):
         for token, _id in tokens:
             if token not in self.indexed_tokens.keys():
-                temp_set = set()
-                temp_set.add((_id, tokens.count((token, _id))))
-                self.indexed_tokens[token] = temp_set
+                temp_dict = dict()            
+                temp_dict[_id] = tokens.count((token, _id))
+                self.indexed_tokens[token] = temp_dict
             else:
-                if _id not in self.indexed_tokens[token]:
-                    self.indexed_tokens[token].add((_id, tokens.count((token, _id))))
+                self.indexed_tokens[token][_id] = tokens.count((token, _id))
+                #if _id not in self.indexed_tokens[token].keys():
+                #    self.indexed_tokens[token][_id] = tokens.count((token, _id))
+                #else:
+                #    self.indexed_tokens[token][_id] = tokens.count((token, _id))
     
     def clearIndex(self):
         self.indexed_tokens = {}
@@ -50,10 +53,11 @@ class Indexer:
         temp_index = {}
         output_files = os.listdir("output")
         output_files = [open("output/"+block_file) for block_file in output_files]
+        print(output_files)
         lines = [(block_file.readline()[:-1], i) for i, block_file in enumerate(output_files)]
         initial_mem = psutil.virtual_memory().available
         while lines:
-            for line, i in lines:
+            for line, i in lines:                
                 line = line.split(" : ")
                 term = line[0]
                 postings = line[1]

@@ -21,7 +21,8 @@ class SPIMI:
 
     def run(self):
         # Main function
-
+        self.indexer.merge_blocks()
+        
         count = 0
         begin = time.time()
         with open(self.dataset,'r') as fd:
@@ -41,6 +42,7 @@ class SPIMI:
                     tokens = self.tokenizer.get_tokens(string, review_id)
                     
                     self.indexer.run(tokens)
+                    self.indexer.getIndexedTokens()
                     count+=1
                     
                 else:
