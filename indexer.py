@@ -20,10 +20,6 @@ class Indexer:
                 self.indexed_tokens[token] = temp_dict
             else:
                 self.indexed_tokens[token][_id] = tokens.count((token, _id))
-                #if _id not in self.indexed_tokens[token].keys():
-                #    self.indexed_tokens[token][_id] = tokens.count((token, _id))
-                #else:
-                #    self.indexed_tokens[token][_id] = tokens.count((token, _id))
     
     def clearIndex(self):
         self.indexed_tokens = {}
@@ -52,16 +48,16 @@ class Indexer:
         print("Merging...")
         temp_index = {}
         output_files = os.listdir("output")
-        output_files = [open("output/"+block_file) for block_file in output_files]
-        print(output_files)
+        output_files = [open("output/"+block_file,'r') for block_file in output_files]
+        #print(output_files)
         lines = [(block_file.readline()[:-1], i) for i, block_file in enumerate(output_files)]
         initial_mem = psutil.virtual_memory().available
         while lines:
-            for line, i in lines:                
+            for line, i in lines:
                 line = line.split(" : ")
                 term = line[0]
                 postings = line[1]
-                postings_list = [str(s) for s in postings.replace('[', '').replace(']', '').replace("'", '').split(',')]
+                postings_list = [str(s) for s in postings.replace('{', '').replace('}', '').replace("'", '').split(',')]
 
                 used_mem = initial_mem - psutil.virtual_memory().available                
                 # changed to use 300mb insted of just 3mb

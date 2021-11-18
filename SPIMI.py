@@ -21,7 +21,6 @@ class SPIMI:
 
     def run(self):
         # Main function
-        self.indexer.merge_blocks()
         
         count = 0
         begin = time.time()
@@ -31,20 +30,14 @@ class SPIMI:
             print("Indexing...")
             for row in rd:                
                 # Block
-                if count < self.chunk_limit:   
-                    #if row[2] != 'review_id':
-                    #review_id, product_title, review_headline, review_body = row[2], row[5], row[12], row[13]
-                    #string = product_title + " " + review_headline + " " + review_body
-                    #tokens += self.tokenizer.get_tokens(string, review_id)
+                if count < self.chunk_limit:
                     review_id, review_headline, review_body = row['review_id'], row['review_headline'], row['review_body']
                     string = review_headline + " " + review_body
                     
                     tokens = self.tokenizer.get_tokens(string, review_id)
-                    
                     self.indexer.run(tokens)
-                    self.indexer.getIndexedTokens()
                     count+=1
-                    
+                     
                 else:
                     # reaching limit - write block on disk
                     # clear memory
@@ -63,6 +56,7 @@ class SPIMI:
 
         print("Total indexing time before merging (min): ", round((time.time()-begin)/60, 2))
         # clear memory
+        tokens = []
         self.indexer.clearIndex()
         
         # Merge blocks    
