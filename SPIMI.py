@@ -40,7 +40,7 @@ class SPIMI:
                     
                     tokens = self.tokenizer.get_tokens(string, review_id)
                     
-                    self.indexer.run(tokens)                            
+                    self.indexer.run(tokens)
                     count+=1
                     
                 else:

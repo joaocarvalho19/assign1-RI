@@ -15,7 +15,9 @@ class Indexer:
     def run(self, tokens):
         for token, _id in tokens:
             if token not in self.indexed_tokens.keys():
-                self.indexed_tokens[token] = set((_id, tokens.count((token, _id))))
+                temp_set = set()
+                temp_set.add((_id, tokens.count((token, _id))))
+                self.indexed_tokens[token] = temp_set
             else:
                 if _id not in self.indexed_tokens[token]:
                     self.indexed_tokens[token].add((_id, tokens.count((token, _id))))
