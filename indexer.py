@@ -1,9 +1,10 @@
 import ast
 import os
 import re
+import fnmatch
+import psutil
 from typing import cast
 
-import psutil
 
 class Indexer:
     def __init__(self):
@@ -21,16 +22,19 @@ class Indexer:
             else:
                 self.indexed_tokens[token][_id] = tokens.count((token, _id))
     
-    def clearIndex(self):
+    def get_final_index(self):
+        return self.final_index
+    
+    def clear_index(self):
         self.indexed_tokens = {}
     
-    def getIndexedTokens(self):
+    def get_indexed_tokens(self):
         return self.indexed_tokens
     
-    def getVocabularySize(self):
+    def get_vocabulary_size(self):
         return self.vocabulary_size
 
-    def getIndexSize(self):
+    def get_index_size(self):
         return self.index_size
 
     def write_block(self, number):
@@ -48,8 +52,7 @@ class Indexer:
         print("Merging...")
         temp_index = {}
         output_files = os.listdir("output")
-        output_files = [open("output/"+block_file,'r') for block_file in output_files]
-        #print(output_files)
+        output_files = [open("output/"+block_file,'r') for block_file in output_files if block_file != '.DS_Store']
         lines = [(block_file.readline()[:-1], i) for i, block_file in enumerate(output_files)]
         initial_mem = psutil.virtual_memory().available
         while lines:
@@ -97,3 +100,25 @@ class Indexer:
         self.index_size += os.path.getsize('./index_' + str(self.index_num) + '.txt')
         self.vocabulary_size += len(ordered_dict)
         f.close()
+        
+    def merge_indexes(self):
+        final_index = {}
+        indexes = fnmatch.filter(os.listdir('.'), 'index_*.txt')
+        if len(indexes) == 1:
+            os.rename(indexes[0],'final_index.txt')
+        else:
+            indexes = [open(idx_file, 'r') for idx_file in indexes]
+            lines = [(idx_file.readline()[:-1], i) for i, idx_file in enumerate(indexes)]
+            while lines:
+                pass
+    
+    def load_index(self):
+        self.final_index = {}
+        with open('final_index.txt','r') as f:
+            for line in f:
+                row = line.split(' : ')
+                key = row[0]
+                val = row[1]
+                val.strip('\n')
+                self.final_index[key] = val
+        

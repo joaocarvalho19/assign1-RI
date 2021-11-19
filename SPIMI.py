@@ -7,7 +7,6 @@ import nltk
 from nltk.corpus import stopwords
 import time
 import os
-#import psutil
 
 
 class SPIMI:
@@ -21,7 +20,6 @@ class SPIMI:
 
     def run(self):
         # Main function
-        
         count = 0
         begin = time.time()
         with open(self.dataset,'r') as fd:
@@ -29,7 +27,7 @@ class SPIMI:
             tokens = []
             print("Indexing...")
             for row in rd:                
-                # Block
+                # Shorter blocks mean a faster execution
                 if count < self.chunk_limit:
                     review_id, review_headline, review_body = row['review_id'], row['review_headline'], row['review_body']
                     string = review_headline + " " + review_body
@@ -38,35 +36,48 @@ class SPIMI:
                     self.indexer.run(tokens)
                     count+=1
                      
+                # reaching limit - write block on disk
                 else:
-                    # reaching limit - write block on disk
                     # clear memory
                     tokens = []
                     self.indexer.write_block(self.block_num)
                     self.block_num += 1
                     
                     # clear memory
-                    self.indexer.clearIndex()
+                    self.indexer.clear_index()
                     count=0
                     #break
 
         if tokens != []:
             self.indexer.run(tokens)
             self.indexer.write_block(self.block_num)
-
-        print("Total indexing time before merging (min): ", round((time.time()-begin)/60, 2))
+        
         # clear memory
         tokens = []
-        self.indexer.clearIndex()
+        self.indexer.clear_index()
         
         # Merge blocks    
         self.indexer.merge_blocks()
-        end = time.time()
-
-        print("Total indexing time (min): ", round((end-begin)/60, 2))
-        print("Total index size on disk: ", self.indexer.getIndexSize())
-        print("Vocabulary size: ", self.indexer.getVocabularySize())
+        self.indexer.merge_indexes()
+        
+        print("Total indexing time (min): ", round((time.time()-begin)/60, 2))
+        print("Total index size on disk: ", self.indexer.get_index_size())
+        print("Vocabulary size: ", self.indexer.get_vocabulary_size())
         print("Number of temporary index segments written to disk: ", self.block_num)
+        
+        print("Loading index into memory...")
+        begin = time.time()
+        self.indexer.load_index()
+        print("Loading time: ", round((time.time()-begin)/60, 5))
+        
+        while True:
+            term = input('Term to be searched: ')
+            if term in self.indexer.get_final_index().keys():
+                print(self.indexer.get_final_index()[term])
+            elif term == 'Quit':
+                break
+            else:
+                print('No such term on the index')
         print("Finish!!")
 
 if __name__ == "__main__":
@@ -75,20 +86,22 @@ if __name__ == "__main__":
     cli_parser = argparse.ArgumentParser()
     cli_parser.add_argument("dataset", help="Dataset")
     cli_parser.add_argument("-m", "--minimum", type=int, default=3, help="Minimum token length. Default 2 characets. Enter 0 to deactivate.")
-    cli_parser.add_argument("-s", "--stopwords", default=default_stopwords, help="Stopword list. Enter 'D' to deactivate")
+    cli_parser.add_argument("-s", "--stopwords", default=None, help="Stopword list. Enter 'D' to deactivate")
     args = cli_parser.parse_args()
     
     data = args.dataset
-    #if args.minimum == 0:
-    #    min_len = None
-    #else:
     min_len = args.minimum
     
-    # TODO: check what we want as an argument and fix the this snippet
-    #if args.stopwords == ['D']:
-    #    stopwords = None
-    #else:
-    stopwords = args.stopwords
+    if args.stopwords == None:
+        stopwords = default_stopwords
+    else:
+        if args.stopwords == 'D':
+            stopwords = args.stopwords
+        else:
+            stopwords = []
+            with open(args.stopwords, 'r') as _file:
+                for row in _file:
+                    stopwords.append(row.strip())
     
-    spimi = SPIMI(data, min_len,stopwords, 10000)
+    spimi = SPIMI(data, min_len,stopwords, 20000)
     spimi.run()
