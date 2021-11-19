@@ -23,8 +23,9 @@ class Tokenizer:
     '''
 
     def get_tokens(self, _data, _id):
-
+        # Remove non ASCII characters
         data = re.sub('\W+', ' ', _data).lower().split()
+
 
         # Minimum length filter
         if self.min_len != 0:

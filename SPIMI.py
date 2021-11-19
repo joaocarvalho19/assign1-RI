@@ -9,6 +9,7 @@ import time
 import os
 
 
+
 class SPIMI:
     def __init__(self, dataset, min_length, stopwords, limit=10000):
         self.dataset = dataset

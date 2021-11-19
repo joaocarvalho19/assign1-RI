@@ -47,7 +47,6 @@ class Indexer:
         
         self.indexed_tokens = {}
 
-    
     def merge_blocks(self):
         print("Merging...")
         temp_index = {}
