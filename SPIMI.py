@@ -30,8 +30,8 @@ class SPIMI:
             for row in rd:                
                 # Shorter blocks mean a faster execution
                 if count < self.chunk_limit:
-                    review_id, review_headline, review_body = row['review_id'], row['review_headline'], row['review_body']
-                    string = review_headline + " " + review_body
+                    review_id, product_title, review_headline, review_body = row['review_id'], row["product_title"], row['review_headline'], row['review_body']
+                    string = product_title + " " + review_headline + " " + review_body
                     
                     tokens = self.tokenizer.get_tokens(string, review_id)
                     self.indexer.run(tokens)
@@ -57,9 +57,11 @@ class SPIMI:
         tokens = []
         self.indexer.clear_index()
         
-        # Merge blocks    
+        # Merge blocks
+        
         self.indexer.merge_blocks()
-        self.indexer.merge_indexes()
+        
+        #self.indexer.merge_indexes()
         
         print("Total indexing time (min): ", round((time.time()-begin)/60, 2))
         print("Total index size on disk: ", self.indexer.get_index_size())
@@ -68,10 +70,10 @@ class SPIMI:
         
         print("Loading index into memory...")
         begin = time.time()
-        self.indexer.load_index()
-        print("Loading time: ", round((time.time()-begin)/60, 5))
+        #self.indexer.load_index()
+        #print("Loading time: ", round((time.time()-begin)/60, 5))
         
-        while True:
+        """while True:
             term = input('Term to be searched: ')
             if term in self.indexer.get_final_index().keys():
                 print(self.indexer.get_final_index()[term])
@@ -79,7 +81,7 @@ class SPIMI:
                 break
             else:
                 print('No such term on the index')
-        print("Finish!!")
+        print("Finish!!")"""
 
 if __name__ == "__main__":
     default_stopwords = stopwords.words('english')

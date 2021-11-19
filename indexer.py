@@ -54,27 +54,34 @@ class Indexer:
         output_files = [open("output/"+block_file,'r') for block_file in output_files if block_file != '.DS_Store']
         lines = [(block_file.readline()[:-1], i) for i, block_file in enumerate(output_files)]
         initial_mem = psutil.virtual_memory().available
+
         while lines:
             for line, i in lines:
+
                 line = line.split(" : ")
-                term = line[0]
-                postings = line[1]
-                postings_list = [str(s) for s in postings.replace('{', '').replace('}', '').replace("'", '').split(',')]
+                if len(line) > 1:
+                    term = line[0]
+                    postings_dict = ast.literal_eval(line[1])
 
-                used_mem = initial_mem - psutil.virtual_memory().available                
-                # changed to use 300mb insted of just 3mb
-                if used_mem > 3000000000:
-                    print("Writing part of index...")
-                    self.write_index(temp_index)
-                    temp_index = {}
-                    self.index_num+=1
-                    initial_mem = psutil.virtual_memory().available
-        
-                if term in temp_index.keys():
-                    temp_index[term] = list(set(temp_index[term] + postings_list))
+                    used_mem = initial_mem - psutil.virtual_memory().available                
+                    # changed to use 300mb insted of just 3mb
+                    if used_mem > 300000000:
+                        print("Writing part of index...")
+                        self.write_index(temp_index)
+                        temp_index = {}
+                        self.index_num+=1
+                        initial_mem = psutil.virtual_memory().available
 
-                else:
-                    temp_index[term] = postings_list
+                    # Update index
+                    if term in temp_index.keys():
+                        for _id in postings_dict.keys():
+                            if _id in temp_index[term]:
+                                temp_index[term][_id] += postings_dict[_id]
+                            else:
+                                temp_index[term][_id] = postings_dict[_id]
+
+                    else:
+                        temp_index[term] = postings_dict
 
             lines = [(block_file.readline()[:-1], i) for i, block_file in enumerate(output_files)]
 
@@ -91,22 +98,23 @@ class Indexer:
 
     def write_index(self, temp_index):
         ordered_dict = dict(sorted(temp_index.items()))
-        with open("index_"+str(self.index_num)+".txt",'w+') as f:
+        with open("index/index_"+str(self.index_num)+".txt",'w') as f:
             for term, value in ordered_dict.items():
                 string = term + ' : ' + str(value) + '\n'
                 f.write(string)
         
-        self.index_size += os.path.getsize('./index_' + str(self.index_num) + '.txt')
+        self.index_size += os.path.getsize('./index/index_' + str(self.index_num) + '.txt')
         self.vocabulary_size += len(ordered_dict)
         f.close()
         
     def merge_indexes(self):
         final_index = {}
-        indexes = fnmatch.filter(os.listdir('.'), 'index_*.txt')
+        indexes = fnmatch.filter(os.listdir('index'), 'index_*.txt')
+        print(indexes)
         if len(indexes) == 1:
             os.rename(indexes[0],'final_index.txt')
         else:
-            indexes = [open(idx_file, 'r') for idx_file in indexes]
+            indexes = [open("index/"+idx_file, 'r') for idx_file in indexes]
             lines = [(idx_file.readline()[:-1], i) for i, idx_file in enumerate(indexes)]
             while lines:
                 pass
