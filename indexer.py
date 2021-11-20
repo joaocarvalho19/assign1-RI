@@ -110,7 +110,7 @@ class Indexer:
     def merge_indexes(self):
         final_index = {}
         indexes = fnmatch.filter(os.listdir('index'), 'index_*.txt')
-        print(indexes)
+        #print(indexes)
         if len(indexes) == 1:
             os.rename(indexes[0],'final_index.txt')
         else:

@@ -8,8 +8,6 @@ from nltk.corpus import stopwords
 import time
 import os
 
-
-
 class SPIMI:
     def __init__(self, dataset, min_length, stopwords, limit=10000):
         self.dataset = dataset
@@ -47,7 +45,6 @@ class SPIMI:
                     # clear memory
                     self.indexer.clear_index()
                     count=0
-                    #break
 
         if tokens != []:
             self.indexer.run(tokens)
@@ -57,8 +54,7 @@ class SPIMI:
         tokens = []
         self.indexer.clear_index()
         
-        # Merge blocks
-        
+        # Merge blocks    
         self.indexer.merge_blocks()
         
         #self.indexer.merge_indexes()

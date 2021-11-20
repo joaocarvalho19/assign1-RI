@@ -1,5 +1,4 @@
-﻿Dataset;Total Indexing Time;Total Index Size on Disk;Vocabulary Size;Num. Temp. Index Segments;Time to Start Index Searcher
-Digital Video Games (73,2 MB);0;0;0;0;0
-Digital Music Purchase (628,9 MB);0;0;0;0;0
-Music (3,67 GB);0;0;0;0;0
-Books (6,7 GB);0;0;0;0;0
+﻿Dataset,Total Indexing Time,Total Index Size on Disk,Vocabulary Size,Num. Temp. Index Segments,Time to Start Index Searcher
+Digital Video Games (73.2 MB),2.85 min,87.4 MB,46039,8,0
+Digital Music Purchase (628.9 MB),37.57 min,675.2 MB,405371,85,0
+Music (3.67 GB),166.75 min,4.6 GB,2738225,238,0
