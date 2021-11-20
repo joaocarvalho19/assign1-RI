@@ -22,8 +22,6 @@ class Indexer:
             else:
                 self.indexed_tokens[token][_id] = tokens.count((token, _id))
     
-    def get_final_index(self):
-        return self.final_index
     
     def clear_index(self):
         self.indexed_tokens = {}
@@ -65,7 +63,7 @@ class Indexer:
 
                     used_mem = initial_mem - psutil.virtual_memory().available                
                     # changed to use 300mb insted of just 3mb
-                    if used_mem > 300000000:
+                    if used_mem > 3000000000:
                         print("Writing part of index...")
                         self.write_index(temp_index)
                         temp_index = {}
@@ -107,25 +105,25 @@ class Indexer:
         self.vocabulary_size += len(ordered_dict)
         f.close()
         
-    def merge_indexes(self):
-        final_index = {}
-        indexes = fnmatch.filter(os.listdir('index'), 'index_*.txt')
-        #print(indexes)
-        if len(indexes) == 1:
-            os.rename(indexes[0],'final_index.txt')
-        else:
-            indexes = [open("index/"+idx_file, 'r') for idx_file in indexes]
-            lines = [(idx_file.readline()[:-1], i) for i, idx_file in enumerate(indexes)]
-            while lines:
-                pass
     
-    def load_index(self):
-        self.final_index = {}
-        with open('final_index.txt','r') as f:
-            for line in f:
-                row = line.split(' : ')
-                key = row[0]
-                val = row[1]
-                val.strip('\n')
-                self.final_index[key] = val
+    def term_query(self, query_term):
+        index_files = os.listdir("index")
+        index_files = [open("index/"+index_file,'r') for index_file in index_files if index_file != '.DS_Store']
+        lines = [(index_file.readline()[:-1], i) for i, index_file in enumerate(index_files)]
+        while lines:
+            for line, i in lines:
+                line = line.split(" : ")
+                term = line[0]
+                postings_dict = ast.literal_eval(line[1])
+                if len(line) > 1:
+                    if query_term == term:
+                        return len(postings_dict)
+
+            lines = [(index_file.readline()[:-1], i) for i, index_file in enumerate(index_files)]
+            for line, i in lines:
+                if not line:
+                    index_files.pop(i)
+                    lines.pop(i)
+
+        return "Term not found :("
         

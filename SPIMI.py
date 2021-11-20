@@ -56,28 +56,23 @@ class SPIMI:
         
         # Merge blocks    
         self.indexer.merge_blocks()
-        
-        #self.indexer.merge_indexes()
-        
+                
         print("Total indexing time (min): ", round((time.time()-begin)/60, 2))
         print("Total index size on disk: ", self.indexer.get_index_size())
         print("Vocabulary size: ", self.indexer.get_vocabulary_size())
         print("Number of temporary index segments written to disk: ", self.block_num)
         
-        print("Loading index into memory...")
-        begin = time.time()
-        #self.indexer.load_index()
-        #print("Loading time: ", round((time.time()-begin)/60, 5))
-        
-        """while True:
-            term = input('Term to be searched: ')
-            if term in self.indexer.get_final_index().keys():
-                print(self.indexer.get_final_index()[term])
-            elif term == 'Quit':
+        # Term Query
+        while True:
+            begin = time.time()  
+            term = input("Term to be searched ('q' to Quit): ")  # 'even'; 'abstract'  for example
+            if term == 'q':
                 break
             else:
-                print('No such term on the index')
-        print("Finish!!")"""
+                print("{} document freq. is: {}".format(term, self.indexer.term_query(term)))
+                print("Query time (sec): ", round((time.time()-begin), 5))
+
+        print("Bye!")
 
 if __name__ == "__main__":
     default_stopwords = stopwords.words('english')
